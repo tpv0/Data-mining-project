@@ -1,0 +1,85 @@
+---
+title: "Intermediate Report"
+author: "Sandy Bou Najm and Thi Phuong Thao Vu"
+date: "2025-09-16"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**Team members (Lab C2):** Thi Phuong Thao Vu, Sandy Bou Najm
+
+## Introduction
+
+
+### Research Objectives  
+
+
+### Using Linear Regression Models
+
+
+## Data
+
+
+## Statistical Modeling Framework
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, out.width="50%"}
+library(gtsummary)
+library(ggplot2)
+library(dplyr)
+library(ggforce)
+library(knitr)
+library(tidyr)
+NHIS2024 <- read.csv("/Users/thao/Projects/Data-mining-project/project_data.csv",stringsAsFactors = TRUE) 
+
+NHIS2024
+
+names(NHIS2024)
+#compact structural view
+glimpse(NHIS2024)
+
+### MISSING VALUES
+# Count missing values in each variable
+colSums(is.na(NHIS2024))
+
+#Check to see if any variable has only missing values
+empty_cols <- names(NHIS2024)[colSums(!is.na(NHIS2024)) == 0]
+empty_cols
+
+#Remove the variables that dont have any values out of dataset
+NHIS2024_clean1 <- NHIS2024 %>%
+  select(-all_of(empty_cols))
+
+#View summary of the dataset
+summary(NHIS2024_clean1)
+
+#Handle missing values
+missing_table <- NHIS2024_clean1 %>%
+  summarise(across(everything(), ~ sum(is.na(.)))) %>%
+  pivot_longer(cols = everything(),
+               names_to = "Variable",
+               values_to = "Missing_Count") %>%
+  mutate(Missing_Percent = (Missing_Count / nrow(NHIS2024_clean1)) * 100) %>%
+  arrange(desc(Missing_Percent))
+
+head(missing_table, 20)
+
+write.csv(missing_table, "missingness_table.csv", row.names = FALSE) # Save to CSV file
+
+#If the same person answer for household and child questions
+print(NHIS2024_clean1$HHRESPSC_FLG)
+summary(NHIS2024_clean1$HHRESPSC_FLG)
+
+table(NHIS2024_clean1$HHRESPSC_FLG, useNA = "ifany")# Tabulate (including NAs)
+
+#Distribution of CURRESP_C
+print(NHIS2024_clean1$CURRESP_C
+head(NHIS2024_clean1$CURRESP_C, 10)
+NHIS2024_clean1$CURRESP_C <- factor(NHIS2024_clean1$CURRESP_C,
+                            levels = c(1, 2, 7, 8, 9),
+                            labels = c("Yes", "No", "Refused", "Not Ascertained", "Don't Know"))
+summary(NHIS2024_clean1$CURRESP_C)
+
+```
